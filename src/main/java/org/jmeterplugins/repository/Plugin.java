@@ -303,8 +303,8 @@ public class Plugin {
     tempName = dwn.getTmpFile();
     // File f = new
     // File(JMeterEngine.class.getProtectionDomain().getCodeSource().getLocation().getFile());
-    File f = new File(Plugin.byGetResource(JMeterEngine.class));
-    destName = URLDecoder.decode(f.getParent(), "UTF-8") + File.separator +
+    // File f = new File(Plugin.byGetResource(JMeterEngine.class));
+    destName = URLDecoder.decode(Objects.requireNonNull(JMeterToolchainService.Companion.getToolchainSettings().toolchain().stdlibExtDir()).getPath(), "UTF-8") + File.separator +
                dwn.getFilename();
   }
 

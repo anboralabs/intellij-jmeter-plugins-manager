@@ -232,18 +232,26 @@ public class PluginManagerDialog extends JEscDialog
     });
 
     CompletableFuture
-        .runAsync(() -> {
+        .supplyAsync(() -> {
           LinkedList<String> options = null;
-          String testPlan = GuiPackage.getInstance().getTestPlanFile();
-          if (testPlan != null) {
-            options = new LinkedList<>();
-            options.add("-t");
-            options.add(testPlan);
+          if (GuiPackage.getInstance() != null) {
+            String testPlan = GuiPackage.getInstance().getTestPlanFile();
+            if (testPlan != null) {
+              options = new LinkedList<>();
+              options.add("-t");
+              options.add(testPlan);
+            }
           }
-          manager.applyChanges(statusChanged, true, options);
-          ActionRouter.getInstance().actionPerformed(
-              new ActionEvent(this, 0, ActionNames.EXIT));
+          return options;
         })
+            .thenCompose(options -> {
+              return manager.applyChanges(statusChanged, true, options);
+            })
+            .thenApply(process -> {
+              ActionRouter.getInstance().actionPerformed(
+                      new ActionEvent(this, 0, ActionNames.EXIT));
+                return null;
+            })
         .whenComplete((unused, ex) -> {
           if (ex != null) {
             if (ex instanceof DownloadException) {

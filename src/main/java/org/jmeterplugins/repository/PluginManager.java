@@ -1,9 +1,11 @@
 package org.jmeterplugins.repository;
 
+import co.anbora.labs.jmeter.ide.toolchain.JMeterToolchainService;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
+import org.anbora.labs.jmeter.plugins.manager.InstallLib;
 import org.apache.jmeter.assertions.Assertion;
 import org.apache.jmeter.config.ConfigElement;
 import org.apache.jmeter.control.Controller;
@@ -27,6 +29,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.file.AccessDeniedException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class PluginManager {
   private static final Logger log =
@@ -104,17 +108,14 @@ public class PluginManager {
   }
 
   private void checkRW()
-      throws UnsupportedEncodingException, AccessDeniedException {
-    String jarPath = Plugin.getJARPath(JMeterEngine.class.getCanonicalName());
-    if (jarPath != null) {
+      throws AccessDeniedException {
       File libext =
-          new File(URLDecoder.decode(jarPath, "UTF-8")).getParentFile();
+          new File(Objects.requireNonNull(JMeterToolchainService.Companion.getToolchainSettings().toolchain().stdlibExtDir()).getPath());
       if (!isWritable(libext)) {
         String msg =
             "Have no write access for JMeter directories, not possible to use Plugins Manager: ";
         throw new AccessDeniedException(msg + libext);
       }
-    }
   }
 
   private boolean isWritable(File path) {
@@ -129,30 +130,42 @@ public class PluginManager {
     }
   }
 
-  public void startModifications(Set<Plugin> delPlugins,
-                                 Set<Plugin> installPlugins,
-                                 Set<Library.InstallationInfo> installLibs,
-                                 Set<String> libDeletions, boolean doRestart,
-                                 LinkedList<String> additionalJMeterOptions)
-      throws IOException {
+  public CompletableFuture<Process> startModifications(Set<Plugin> delPlugins,
+                                                       Set<Plugin> installPlugins,
+                                                       Set<Library.InstallationInfo> installLibs,
+                                                       Set<String> libDeletions, boolean doRestart,
+                                                       LinkedList<String> additionalJMeterOptions) {
     ChangesMaker maker = new ChangesMaker(allPlugins);
-    File moveFile = maker.getMovementsFile(delPlugins, installPlugins,
-                                           installLibs, libDeletions);
-    File installFile = maker.getInstallFile(installPlugins, installLibs);
-    File restartFile;
-    if (doRestart) {
-      restartFile = maker.getRestartFile(additionalJMeterOptions);
-    } else {
-      restartFile = null;
-    }
-    final ProcessBuilder builder =
-        maker.getProcessBuilder(moveFile, installFile, restartFile);
-    log.info("JAR Modifications log will be saved into: " +
-             builder.redirectOutput().file().getPath());
-    builder.start();
+    return CompletableFuture.supplyAsync(() -> {
+      try {
+        File moveFile = maker.getMovementsFile(delPlugins, installPlugins,
+                installLibs, libDeletions);
+        File installFile = maker.getInstallFile(installPlugins, installLibs);
+        File restartFile;
+        if (doRestart) {
+          restartFile = maker.getRestartFile(additionalJMeterOptions);
+        } else {
+          restartFile = null;
+        }
+        return new InstallLib(moveFile, installFile, restartFile);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }).thenCompose(installLib -> {
+      try {
+        final ProcessBuilder builder =
+                maker.getProcessBuilder(installLib.moveFile(), installLib.installFile(), installLib.restartFile());
+        log.info("JAR Modifications log will be saved into: " +
+                builder.redirectOutput().file().getPath());
+        Process p = builder.start();
+        return p.onExit();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
-  public void applyChanges(GenericCallback<String> statusChanged,
+  public CompletableFuture<Process> applyChanges(GenericCallback<String> statusChanged,
                            boolean doRestart,
                            LinkedList<String> additionalJMeterOptions) {
     try {
@@ -202,11 +215,11 @@ public class PluginManager {
       libDeletions.add(Plugin.getLibInstallPath(lib));
     }
 
-    modifierHook(resolver.getDeletions(), additions, libInstalls, libDeletions,
+    return modifierHook(resolver.getDeletions(), additions, libInstalls, libDeletions,
                  doRestart, additionalJMeterOptions);
   }
 
-  private void modifierHook(final Set<Plugin> deletions,
+  private CompletableFuture<Process> modifierHook(final Set<Plugin> deletions,
                             final Set<Plugin> additions,
                             final Set<Library.InstallationInfo> libInstalls,
                             final Set<String> libDeletions,
@@ -215,20 +228,11 @@ public class PluginManager {
     if (deletions.isEmpty() && additions.isEmpty() && libInstalls.isEmpty() &&
         libDeletions.isEmpty()) {
       log.info("Finishing without changes");
+      return CompletableFuture.failedFuture(new RuntimeException("Finishing without changes"));
     } else {
       log.info("Plugins manager will apply some modifications");
-      Runtime.getRuntime().addShutdownHook(new Thread() {
-        @Override
-        public void run() {
-          try {
-            log.info("Starting JMeter Plugins modifications");
-            startModifications(deletions, additions, libInstalls, libDeletions,
-                               doRestart, additionalJMeterOptions);
-          } catch (Exception e) {
-            log.warn("Failed to run plugin cleaner job", e);
-          }
-        }
-      });
+      return startModifications(deletions, additions, libInstalls, libDeletions,
+              doRestart, additionalJMeterOptions);
     }
   }
 

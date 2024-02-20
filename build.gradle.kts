@@ -1,11 +1,11 @@
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.20"
-    id("org.jetbrains.intellij") version "1.16.0"
+    id("org.jetbrains.intellij") version "1.17.1"
 }
 
-group = "co.anbora.labs.jmeter.repository"
-version = "1.0-SNAPSHOT"
+group = "co.anbora.labs.jmeter.plugins.manager"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -17,11 +17,10 @@ intellij {
     version.set("2023.1.5")
     type.set("IC") // Target IDE Platform
 
-    plugins.set(listOf("co.anbora.labs.jmeter.jmeter-intellij:1.3.3"))
+    plugins.set(listOf("co.anbora.labs.jmeter.jmeter-intellij:1.4.1", "com.jetbrains.plugins.ini4idea:231.9225.21"))
 }
 
 dependencies {
-    // implementation("kg.apc:jmeter-plugins-cmn-jmeter:0.7")
 }
 
 tasks {
