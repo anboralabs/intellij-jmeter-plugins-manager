@@ -17,7 +17,7 @@ intellij {
     version.set("2023.1.5")
     type.set("IC") // Target IDE Platform
 
-    plugins.set(listOf("co.anbora.labs.jmeter.jmeter-intellij:1.4.1", "com.jetbrains.plugins.ini4idea:231.9225.21"))
+    plugins.set(listOf("co.anbora.labs.jmeter.jmeter-intellij:1.4.3"))
 }
 
 dependencies {

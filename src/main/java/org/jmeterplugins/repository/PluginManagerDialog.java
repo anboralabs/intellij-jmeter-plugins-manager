@@ -249,7 +249,7 @@ public class PluginManagerDialog extends JEscDialog
             })
             .thenApply(process -> {
               ActionRouter.getInstance().actionPerformed(
-                      new ActionEvent(this, 0, ActionNames.EXIT));
+                      new ActionEvent(this, 0, ActionNames.EXIT_IDE));
                 return null;
             })
         .whenComplete((unused, ex) -> {

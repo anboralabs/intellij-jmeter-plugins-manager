@@ -84,7 +84,7 @@ public class SuggestDialog
             manager.applyChanges(dialog, true, options);
             dispose();
             ActionRouter.getInstance().actionPerformed(
-                new ActionEvent(this, 0, ActionNames.EXIT));
+                new ActionEvent(this, 0, ActionNames.EXIT_IDE));
           }
         }.start();
       }
