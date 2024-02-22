@@ -1,5 +1,7 @@
 package co.anbora.labs.jmeter.plugins.manager.ide.background
 
+import co.anbora.labs.jmeter.ide.notifications.JMeterNotifications
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
@@ -25,7 +27,19 @@ class InstallPluginTask(
                 ActionEvent(this, 0, ActionNames.EXIT_IDE)
             )
             null
-        }
+        }.whenComplete { t, ex ->
+                if (ex != null) {
+                    this.showErrorNotification(
+                        "Failed to apply changes: " +
+                                ex.message
+                    )
+                }
+            }
+    }
+
+    private fun showErrorNotification(description: String) {
+        val notification = JMeterNotifications.createNotification("Installing...", description, NotificationType.ERROR)
+        JMeterNotifications.showNotification(notification, project)
     }
 
     override fun notify(t: String?) = Unit
