@@ -129,7 +129,7 @@ public class CheckLicense {
 
   public static void requestLicense(final String message) {
     // ensure the dialog is appeared from UI thread and in a non-modal context
-    ApplicationManager.getApplication().invokeLater(() -> showRegisterDialog(PRODUCT_CODE, message), ModalityState.nonModal());
+    ApplicationManager.getApplication().invokeLater(() -> showRegisterDialog(PRODUCT_CODE, message), ModalityState.NON_MODAL);
   }
   
   private static void showRegisterDialog(final String productCode, final String message) {

@@ -3,6 +3,8 @@ package co.anbora.labs.jmeter.plugins.manager.ide.gui
 import com.intellij.openapi.project.Project
 import java.awt.BorderLayout
 import java.awt.Dimension
+import javax.swing.Action
+import javax.swing.JButton
 import javax.swing.JLabel
 import javax.swing.JPanel
 
@@ -25,5 +27,9 @@ class LicenseDialog(
         dialogPanel.add(label, BorderLayout.CENTER)
 
         contentPane.add(dialogPanel)
+    }
+
+    override fun createActions(): Array<Action> {
+        return arrayOf(okAction)
     }
 }
