@@ -36,7 +36,7 @@ class InitSuggestPluginListener: ProjectActivity, FileEditorManagerListener.Befo
                     "Please install",
                     "${file.name} needs: $description ",
                     NotificationType.WARNING,
-                    InstallPluginsAction(source.project, pluginManager, pluginsToInstall, file.name)
+                    InstallPluginsAction(source.project, pluginManager, pluginsToInstall)
                 )
 
                 JMeterNotifications.showNotification(notification, source.project)
