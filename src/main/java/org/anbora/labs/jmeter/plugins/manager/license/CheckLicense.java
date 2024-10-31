@@ -1,6 +1,7 @@
 package org.anbora.labs.jmeter.plugins.manager.license;
 
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.ui.LicensingFacade;
@@ -144,7 +145,8 @@ public class CheckLicense {
       registerAction = actionManager.getAction("Register");
     }
     if (registerAction != null) {
-      registerAction.actionPerformed(AnActionEvent.createEvent(
+      ActionUtil.performActionDumbAwareWithCallbacks(
+              registerAction, AnActionEvent.createEvent(
           asDataContext(productCode, message), new Presentation(), "",
           ActionUiKind.NONE, null));
     }
