@@ -154,7 +154,7 @@ public class ChangesMaker {
       throws UnsupportedEncodingException {
     // String file =
     // this.getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
-    File libPathParent = new File(Objects.requireNonNull(JMeterToolchainService.Companion.getToolchainSettings().toolchain().stdlibExtDir()).getPath());
+    File libPathParent = Objects.requireNonNull(JMeterToolchainService.Companion.getToolchainSettings().toolchain().stdlibExtDir()).toFile();
     Files.isWritable(libPathParent.getAbsoluteFile().toPath());
 
     return URLDecoder.decode(libPathParent.getAbsolutePath(), "UTF-8") +

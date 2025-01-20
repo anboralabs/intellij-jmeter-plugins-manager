@@ -1,6 +1,6 @@
 package co.anbora.labs.jmeter.plugins.manager.ide.startup
 
-import co.anbora.labs.jmeter.fileTypes.JmxFileType
+import co.anbora.labs.jmeter.fileTypes.JMeterFileType
 import co.anbora.labs.jmeter.ide.notifications.JMeterNotifications
 import co.anbora.labs.jmeter.plugins.manager.ide.actions.InstallPluginsAction
 import com.intellij.notification.NotificationType
@@ -23,7 +23,7 @@ class InitSuggestPluginListener: ProjectActivity, FileEditorManagerListener.Befo
 
     override fun beforeFileOpened(source: FileEditorManager, file: VirtualFile) {
         val fileType = FileTypeRegistry.getInstance().getFileTypeByExtension(file.extension.orEmpty())
-        if (fileType == JmxFileType) {
+        if (fileType == JMeterFileType) {
             val pluginsToInstall: MutableSet<Plugin> = HashSet()
             val pluginManager = PluginManager()
             val suggester = PluginSuggester(pluginManager)
