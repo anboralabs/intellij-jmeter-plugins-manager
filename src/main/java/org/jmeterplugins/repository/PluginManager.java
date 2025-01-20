@@ -110,7 +110,7 @@ public class PluginManager {
   private void checkRW()
       throws AccessDeniedException {
       File libext =
-          new File(Objects.requireNonNull(JMeterToolchainService.Companion.getToolchainSettings().toolchain().stdlibExtDir()).getPath());
+              Objects.requireNonNull(JMeterToolchainService.Companion.getToolchainSettings().toolchain().stdlibExtDir()).toFile();
       if (!isWritable(libext)) {
         String msg =
             "Have no write access for JMeter directories, not possible to use Plugins Manager: ";

@@ -1,6 +1,6 @@
 package co.anbora.labs.jmeter.plugins.manager.ide.startup
 
-import co.anbora.labs.jmeter.fileTypes.JmxFileType
+import co.anbora.labs.jmeter.fileTypes.JMeterFileType
 import co.anbora.labs.jmeter.ide.notifications.JMeterNotifications
 import co.anbora.labs.jmeter.plugins.manager.ide.actions.InstallPluginsAction
 import com.intellij.notification.NotificationType
@@ -10,6 +10,7 @@ import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.vfs.VirtualFile
+import org.anbora.labs.jmeter.plugins.manager.license.CheckLicense
 import org.jmeterplugins.repository.Plugin
 import org.jmeterplugins.repository.PluginManager
 import org.jmeterplugins.repository.plugins.PluginSuggester
@@ -19,11 +20,17 @@ class InitSuggestPluginListener: ProjectActivity, FileEditorManagerListener.Befo
     override suspend fun execute(project: Project) {
         project.messageBus.connect()
             .subscribe(FileEditorManagerListener.Before.FILE_EDITOR_MANAGER, this)
+
+        val licensed = CheckLicense.isLicensed() ?: false
+
+        if (licensed) {
+            CheckLicense.requestLicense("Support plugin buying a license.")
+        }
     }
 
     override fun beforeFileOpened(source: FileEditorManager, file: VirtualFile) {
         val fileType = FileTypeRegistry.getInstance().getFileTypeByExtension(file.extension.orEmpty())
-        if (fileType == JmxFileType) {
+        if (fileType == JMeterFileType) {
             val pluginsToInstall: MutableSet<Plugin> = HashSet()
             val pluginManager = PluginManager()
             val suggester = PluginSuggester(pluginManager)

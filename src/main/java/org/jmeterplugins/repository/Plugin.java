@@ -238,7 +238,7 @@ public class Plugin {
   public static String getLibInstallPath(String lib) {
     try {
       List<String> pathsInternal =
-          listFilesUsingDirectoryStream(Objects.requireNonNull(JMeterToolchainService.Companion.getToolchainSettings().toolchain().stdlibExtDir()).getPath());
+          listFilesUsingDirectoryStream(Objects.requireNonNull(JMeterToolchainService.Companion.getToolchainSettings().toolchain().stdlibExtDir()).toString());
       String[] cp2 = pathsInternal.toArray(String[] ::new);
       String path2 = getLibPath(lib, cp2);
       if (path2 != null)
@@ -304,7 +304,7 @@ public class Plugin {
     // File f = new
     // File(JMeterEngine.class.getProtectionDomain().getCodeSource().getLocation().getFile());
     // File f = new File(Plugin.byGetResource(JMeterEngine.class));
-    destName = URLDecoder.decode(Objects.requireNonNull(JMeterToolchainService.Companion.getToolchainSettings().toolchain().stdlibExtDir()).getPath(), "UTF-8") + File.separator +
+    destName = URLDecoder.decode(Objects.requireNonNull(JMeterToolchainService.Companion.getToolchainSettings().toolchain().stdlibExtDir()).toString(), "UTF-8") + File.separator +
                dwn.getFilename();
   }
 

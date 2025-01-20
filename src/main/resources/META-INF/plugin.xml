@@ -1,9 +1,9 @@
 <idea-plugin>
     <id>co.anbora.labs.jmeter.plugins.manager</id>
-    <name>JMeter Plugins Manager</name>
-    <vendor email="anboralabs@gmail.com" url="https://labs.anbora.co">Anbora-labs</vendor>
+    <name>JMeter Manager</name>
+    <vendor email="support@anbora.co" url="https://labs.anbora.co">Anbora-labs</vendor>
 
-    <product-descriptor code="PJMETERPLUGINSM" release-date="20240622" release-version="11"/>
+    <product-descriptor code="PJMETERPLUGINSM" release-date="20250117" release-version="12"/>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
