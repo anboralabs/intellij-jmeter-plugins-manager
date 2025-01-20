@@ -3,6 +3,7 @@ package co.anbora.labs.jmeter.plugins.manager.errorHandler
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.ErrorReportSubmitter
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
 import com.intellij.openapi.diagnostic.SubmittedReportInfo
 import com.intellij.openapi.project.Project
@@ -11,7 +12,7 @@ import com.intellij.util.Consumer
 import java.awt.Component
 
 
-class SentryErrorHandler: INReporterCompat() {
+class SentryErrorHandler: ErrorReportSubmitter() {
 
     override fun getReportActionText(): String = "Report To Anbora-Labs"
 

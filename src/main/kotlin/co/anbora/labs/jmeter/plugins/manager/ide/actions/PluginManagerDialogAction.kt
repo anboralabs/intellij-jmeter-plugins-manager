@@ -2,6 +2,7 @@ package co.anbora.labs.jmeter.plugins.manager.ide.actions
 
 import co.anbora.labs.jmeter.ide.settings.JMeterProjectSettingsConfigurable
 import co.anbora.labs.jmeter.ide.toolchain.JMeterToolchainService.Companion.toolchainSettings
+import co.anbora.labs.jmeter.plugins.manager.icons.JMeterManagerIcons
 import co.anbora.labs.jmeter.plugins.manager.ide.gui.LicenseDialog
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent

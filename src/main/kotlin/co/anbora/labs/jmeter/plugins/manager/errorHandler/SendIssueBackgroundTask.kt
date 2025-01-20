@@ -1,6 +1,5 @@
 package co.anbora.labs.jmeter.plugins.manager.errorHandler
 
-import com.intellij.diagnostic.IdeaReportingEvent
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.idea.IdeaLogger
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent
@@ -30,43 +29,23 @@ class SendIssueBackgroundTask(
         options.tracesSampleRate = 1.0
         val hub = Hub(options)
 
-        val event = SentryEvent()
-        event.level = SentryLevel.ERROR
+        events.forEach {
+            val event = SentryEvent()
+            event.level = SentryLevel.ERROR
 
-        if (pluginDescriptor is IdeaPluginDescriptor) {
-            event.release = pluginDescriptor.getVersion()
-        }
-        // set server name to empty to avoid tracking personal data
-        event.serverName = ""
-
-        // now, attach all exceptions to the message
-        //List<SentryException> errors = new ArrayList<>(events.length);
-        for (ideaEvent in events) {
-            // this is the tricky part
-            // ideaEvent.throwable is a com.intellij.diagnostic.IdeaReportingEvent.TextBasedThrowable
-            // This is a wrapper and is only providing the original stacktrace via 'printStackTrace(...)',
-            // but not via 'getStackTrace()'.
-            //
-            // Sentry accesses Throwable.getStackTrace(),
-            // So, we workaround this by retrieving the original exception from the data property
-            if (ideaEvent is IdeaReportingEvent) {
-                val ex: Throwable = ideaEvent.data.throwable
-                event.throwable = ex
-                break
-            } else {
-                // ignoring this ideaEvent, you might not want to do this
+            if (pluginDescriptor is IdeaPluginDescriptor) {
+                event.release = pluginDescriptor.getVersion()
             }
+            // set server name to empty to avoid tracking personal data
+            event.serverName = ""
+
+            event.throwable = it.throwable
+
+            event.setExtra("last_action", IdeaLogger.ourLastActionId)
+
+            // by default, Sentry is sending async in a background thread
+            hub.captureEvent(event)
         }
-        //event.setExceptions(errors);
-        // might be useful to debug the exception
-        //event.setExceptions(errors);
-        // might be useful to debug the exception
-        event.setExtra("last_action", IdeaLogger.ourLastActionId)
-
-        // by default, Sentry is sending async in a background thread
-
-        // by default, Sentry is sending async in a background thread
-        hub.captureEvent(event)
 
         consumer.accept(Unit)
     }
