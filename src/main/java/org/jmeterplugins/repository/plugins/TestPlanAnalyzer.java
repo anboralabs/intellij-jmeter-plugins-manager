@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
+
 public class TestPlanAnalyzer {
 
   private static final Logger log =
@@ -125,7 +127,7 @@ public class TestPlanAnalyzer {
 
   private NodeList getNodeListWithClassNames(String path) {
     try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilderFactory factory = new DocumentBuilderFactoryImpl();
       factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",
                          true);
       factory.setFeature(
