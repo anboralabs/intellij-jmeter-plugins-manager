@@ -41,6 +41,14 @@ dependencies {
         pluginVerifier()
         // testFramework(TestFrameworkType.Platform.JUnit4)
     }
+
+    implementation("com.github.weisj:darklaf-core:2.7.3")
+    implementation("com.github.weisj:darklaf-theme:2.7.3")
+    implementation("com.github.weisj:darklaf-extensions-rsyntaxarea:0.3.4")
+    implementation("com.github.weisj:darklaf-property-loader:2.7.3")
+
+    implementation("net.sf.json-lib:json-lib:2.4:jdk15")
+
     implementation("io.sentry:sentry:6.16.0")
 }
 
