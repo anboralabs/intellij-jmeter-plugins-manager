@@ -20,7 +20,6 @@
 
     <extensions defaultExtensionNs="co.anbora.labs.jmeter.jmeter-intellij">
         <routerActions implementation="co.anbora.labs.jmeter.plugins.manager.router.actions.flavor.JMeterRepositoryActions" />
-        <checker implementation="co.anbora.labs.jmeter.plugins.manager.ide.checker.JMeterPluginsManagerChecker" />
     </extensions>
 
     <actions>

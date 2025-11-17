@@ -10,10 +10,12 @@ import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.concurrency.AppExecutorUtil
 import org.anbora.labs.jmeter.plugins.manager.license.CheckLicense
 import org.jmeterplugins.repository.Plugin
 import org.jmeterplugins.repository.PluginManager
 import org.jmeterplugins.repository.plugins.PluginSuggester
+import java.util.concurrent.TimeUnit
 
 class InitSuggestPluginListener: ProjectActivity, FileEditorManagerListener.Before {
 
@@ -21,9 +23,19 @@ class InitSuggestPluginListener: ProjectActivity, FileEditorManagerListener.Befo
         project.messageBus.connect()
             .subscribe(FileEditorManagerListener.Before.FILE_EDITOR_MANAGER, this)
 
-        val licensed = CheckLicense.isLicensed() ?: false
+        val licensed = CheckLicense.isLicensed()
+        if (licensed == null) {
+            AppExecutorUtil.getAppScheduledExecutorService().schedule({
+                val licensed = CheckLicense.isLicensed() ?: false
 
-        if (licensed) {
+                if (!licensed && !project.isDisposed) {
+                    CheckLicense.requestLicense("Support plugin buying a license.")
+                }
+            }, 5, TimeUnit.MINUTES)
+            return
+        }
+
+        if (!licensed) {
             CheckLicense.requestLicense("Support plugin buying a license.")
         }
     }
