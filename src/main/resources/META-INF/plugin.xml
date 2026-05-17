@@ -3,7 +3,7 @@
     <name>JMeter Manager</name>
     <vendor email="support@anbora.co" url="https://labs.anbora.co">Anbora-labs</vendor>
 
-    <product-descriptor code="PJMETERPLUGINSM" release-date="20260201" release-version="15"/>
+    <product-descriptor code="PJMETERPLUGINSM" release-date="20260517" release-version="16"/>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
